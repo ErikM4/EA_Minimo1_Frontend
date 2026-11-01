@@ -1,0 +1,273 @@
+/* Estilos comunes a todas las pantallas. Lo que es de un solo componente va en su .css */
+
+:root {
+  --primary: #3949ab;
+  --primary-dark: #283593;
+  --danger: #c62828;
+  --danger-light: #fdecea;
+  --text: #1f2933;
+  --muted: #6b7280;
+  --border: #d9dde3;
+  --background: #f4f5f7;
+  --surface: #ffffff;
+  --radius: 6px;
+
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+}
+
+a {
+  color: var(--primary);
+}
+
+/* Botones. Los enlaces con la clase "button" se ven igual */
+button,
+.button {
+  display: inline-block;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled),
+.button:hover {
+  background: var(--primary-dark);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.secondary {
+  background: var(--surface);
+  color: var(--primary);
+}
+
+button.secondary:hover:not(:disabled) {
+  background: #eef0fb;
+}
+
+button.danger {
+  border-color: var(--danger);
+  background: var(--surface);
+  color: var(--danger);
+}
+
+button.danger:hover:not(:disabled) {
+  background: var(--danger-light);
+}
+
+/* Cabecera de los listados: título a la izquierda y botón de crear a la derecha */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+/* Tablas de los listados */
+table {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-collapse: collapse;
+  background: var(--surface);
+}
+
+th,
+td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.92rem;
+  text-align: left;
+}
+
+th {
+  background: #eef0f4;
+  font-weight: 600;
+}
+
+td.actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+td.actions button + button {
+  margin-left: 0.4rem;
+}
+
+td.empty,
+.muted {
+  color: var(--muted);
+}
+
+/* Formularios */
+input,
+select,
+textarea {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+/* Angular añade estas clases a los controles, así marco en rojo los que están mal */
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border-color: var(--danger);
+}
+
+.search {
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 1rem;
+}
+
+/* Buscador a la izquierda y selector de lista/tarjetas a la derecha */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.toolbar .search {
+  margin-bottom: 0;
+}
+
+form {
+  display: grid;
+  gap: 1rem;
+  max-width: 560px;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+label.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.field-error {
+  color: var(--danger);
+  font-size: 0.82rem;
+  font-weight: normal;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: normal;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Aviso de error encima de las tablas y de los formularios */
+.alert {
+  padding: 0.75rem 1rem;
+  border: 1px solid #f5c2c0;
+  border-radius: var(--radius);
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+/* Vista en tarjetas de los listados: caben las que quepan por fila */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.card-body {
+  display: grid;
+  flex: 1;
+  align-content: start;
+  gap: 0.4rem;
+  padding: 0.9rem 1rem;
+  font-size: 0.9rem;
+}
+
+.card-body h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.cards-empty {
+  grid-column: 1 / -1;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+/* Aviso de que algo ha ido bien (por ejemplo, cuenta creada) */
+.notice {
+  padding: 0.75rem 1rem;
+  border: 1px solid #b7dfb9;
+  border-radius: var(--radius);
+  background: #edf7ed;
+  color: #1e4620;
+}

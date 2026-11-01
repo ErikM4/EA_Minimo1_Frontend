@@ -1,0 +1,49 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  height: 56px;
+  padding: 0 1.5rem;
+  background: var(--primary);
+}
+
+.brand {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  gap: 0.25rem;
+}
+
+nav a {
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius);
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+
+nav a:hover {
+  color: #fff;
+}
+
+nav a.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* La sesión va a la derecha del todo */
+.session {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.user {
+  color: #fff;
+  font-size: 0.9rem;
+}
