@@ -10,6 +10,6 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './navbar.css',
 })
 export class Navbar {
-  // Público para usarlo en la plantilla: auth.user(), auth.isAdmin(), auth.logout()
+  // La plantilla usa el servicio para mostrar los enlaces según la sesión y el rol.
   auth = inject(AuthService);
 }

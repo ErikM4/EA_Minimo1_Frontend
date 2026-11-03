@@ -1,0 +1,73 @@
+<h1>{{ id() ? 'Revisar reporte' : 'Nuevo reporte' }}</h1>
+
+@if (error()) {
+  <p class="alert" role="alert">{{ error() }}</p>
+}
+
+@if (loading()) {
+  <p class="muted">Cargando reporte...</p>
+} @else if (loadFailed()) {
+  <a routerLink="/reports">Volver a reportes</a>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <label>
+      Tipo de objetivo *
+      <select formControlName="targetType">
+        @for (targetType of targetTypes; track targetType) {
+          <option [value]="targetType">{{ targetType }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      ID del objetivo *
+      <input type="text" formControlName="targetId" />
+      @if (form.controls.targetId.touched && form.controls.targetId.invalid) {
+        <small class="field-error">Introduce un ID válido de 24 caracteres hexadecimales.</small>
+      }
+    </label>
+
+    <label>
+      Motivo *
+      <select formControlName="reason">
+        @for (reason of reasons; track reason) {
+          <option [value]="reason">{{ reason }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Descripción *
+      <textarea rows="4" formControlName="description"></textarea>
+      @if (form.controls.description.touched && form.controls.description.invalid) {
+        <small class="field-error">La descripción debe tener entre 5 y 1000 caracteres.</small>
+      }
+    </label>
+
+    @if (id()) {
+      <label>
+        Estado *
+        <select formControlName="status">
+          @for (status of statuses; track status) {
+            <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Notas de moderación
+        <textarea rows="3" formControlName="adminNotes"></textarea>
+        @if (form.controls.adminNotes.touched && form.controls.adminNotes.invalid) {
+          <small class="field-error">Las notas no pueden superar los 500 caracteres.</small>
+        }
+      </label>
+    }
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="form.invalid || saving()">
+        {{ saving() ? 'Guardando...' : id() ? 'Guardar revisión' : 'Crear reporte' }}
+      </button>
+      <a [routerLink]="auth.isAdmin() ? '/reports' : '/'">Cancelar</a>
+    </div>
+  </form>
+}

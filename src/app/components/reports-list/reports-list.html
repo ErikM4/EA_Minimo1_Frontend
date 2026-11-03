@@ -1,0 +1,146 @@
+<div class="page-header">
+  <h1>Reportes</h1>
+  <a class="button" routerLink="/reports/new">Nuevo reporte</a>
+</div>
+
+<div class="toolbar">
+  <input
+    class="search"
+    type="search"
+    placeholder="Buscar por descripción o notas"
+    aria-label="Buscar reportes"
+    [ngModel]="search()"
+    (ngModelChange)="onSearchChange($event)"
+  />
+  <label class="inline-filter">
+    <input
+      type="checkbox"
+      [ngModel]="showDeleted()"
+      (ngModelChange)="onDeletedFilterChange($event)"
+    />
+    Mostrar eliminados
+  </label>
+  <select
+    aria-label="Filtrar reportes por estado"
+    [ngModel]="statusFilter()"
+    (ngModelChange)="onStatusFilterChange($event)"
+  >
+    <option value="">Todos los estados</option>
+    <option value="PENDING">Pendiente</option>
+    <option value="REVIEWED">Revisado</option>
+    <option value="RESOLVED">Resuelto</option>
+    <option value="DISMISSED">Desestimado</option>
+  </select>
+</div>
+
+@if (selectedIds().size > 0) {
+  <div class="bulk-actions">
+    <span>{{ selectedIds().size }} seleccionado(s)</span>
+    <button
+      type="button"
+      class="secondary"
+      [disabled]="deleting()"
+      (click)="requestDelete([...selectedIds()], false)"
+    >
+      Archivar seleccionados
+    </button>
+    <button
+      type="button"
+      class="danger"
+      [disabled]="deleting()"
+      (click)="requestDelete([...selectedIds()], true)"
+    >
+      Eliminar definitivamente
+    </button>
+  </div>
+}
+
+@if (error()) {
+  <p class="alert" role="alert">{{ error() }}</p>
+}
+
+@if (loading()) {
+  <p class="muted">Cargando reportes...</p>
+} @else {
+  <table>
+    <thead>
+      <tr>
+        <th>
+          <input
+            type="checkbox"
+            aria-label="Seleccionar todos los reportes de esta página"
+            [checked]="isAllSelected()"
+            (change)="toggleSelectAll($event)"
+          />
+        </th>
+        <th [attr.aria-sort]="sortBy() === 'targetType' ? (sortOrder() === 'asc' ? 'ascending' : 'descending') : 'none'">
+          <button type="button" class="sort-button" (click)="sort('targetType')">Tipo ↕</button>
+        </th>
+        <th>Objetivo</th>
+        <th [attr.aria-sort]="sortBy() === 'reason' ? (sortOrder() === 'asc' ? 'ascending' : 'descending') : 'none'">
+          <button type="button" class="sort-button" (click)="sort('reason')">Motivo ↕</button>
+        </th>
+        <th>Descripción</th>
+        <th [attr.aria-sort]="sortBy() === 'createdAt' ? (sortOrder() === 'asc' ? 'ascending' : 'descending') : 'none'">
+          <button type="button" class="sort-button" (click)="sort('createdAt')">Fecha ↕</button>
+        </th>
+        <th>Estado</th>
+        <th>Registro</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (report of reports(); track report._id) {
+        <tr>
+          <td>
+            <input
+              type="checkbox"
+              [attr.aria-label]="'Seleccionar reporte ' + report.reason"
+              [checked]="selectedIds().has(report._id)"
+              (change)="toggleSelected(report._id, $event)"
+            />
+          </td>
+          <td>{{ report.targetType }}</td>
+          <td>{{ targetId(report) }}</td>
+          <td>{{ report.reason }}</td>
+          <td>{{ report.description }}</td>
+          <td>{{ report.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ report.status }}</td>
+          <td>
+            <span class="status" [class.inactive]="report.deletedAt != null">
+              {{ report.deletedAt != null ? 'Eliminado' : 'Activo' }}
+            </span>
+          </td>
+          <td class="actions">
+            <a class="button secondary" [routerLink]="['/reports', report._id, 'edit']">Revisar</a>
+            @if (!report.deleted) {
+              <button
+                type="button"
+                class="danger"
+                (click)="requestDelete([report._id], false)"
+              >
+                Archivar
+              </button>
+            }
+            <button
+              type="button"
+              class="danger"
+              (click)="requestDelete([report._id], true)"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td class="empty" colspan="9">No hay reportes para mostrar.</td></tr>
+      }
+    </tbody>
+  </table>
+
+  <app-pagination [page]="page()" [totalPages]="totalPages()" (pageChange)="onPageChange($event)" />
+}
+
+<app-confirm-modal
+  (confirmed)="confirmDelete()"
+  (cancelled)="pendingDelete.set(null)"
+/>

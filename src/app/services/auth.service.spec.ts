@@ -14,7 +14,7 @@ describe('AuthService', () => {
   const loginResponse: LoginResponse = {
     token: 'access-1',
     refreshToken: 'refresh-1',
-    user: { _id: 'u1', name: 'Admin', email: 'admin@example.com', role: 'admin' },
+    user: { _id: 'u1', name: 'Admin', email: 'admin@example.com', role: 'ADMIN' },
   };
 
   beforeEach(() => {

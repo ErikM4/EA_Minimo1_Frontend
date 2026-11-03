@@ -26,11 +26,11 @@ describe('ChatService', () => {
     localStorage.clear();
   });
 
-  it('getUsers() returns the users of GET /users', () => {
+  it('getUsers() returns the chat users from the dedicated endpoint', () => {
     let names: string[] = [];
     service.getUsers().subscribe((users) => (names = users.map((user) => user.name)));
 
-    httpMock.expectOne(`${environment.apiUrl}/users`).flush({
+    httpMock.expectOne(`${environment.apiUrl}/users/chat-users`).flush({
       users: [
         { _id: 'u1', name: 'Admin' },
         { _id: 'u2', name: 'Usuario' },
@@ -38,6 +38,36 @@ describe('ChatService', () => {
     });
 
     expect(names).toEqual(['Admin', 'Usuario']);
+  });
+
+  it('getUsers() accepts the paginated response shape for compatibility', () => {
+    let names: string[] = [];
+    service.getUsers().subscribe((users) => (names = users.map((user) => user.name)));
+
+    httpMock.expectOne(`${environment.apiUrl}/users/chat-users`).flush({
+      data: [
+        { _id: 'u1', name: 'Admin' },
+        { _id: 'u2', name: 'Usuario' },
+      ],
+      totalDocs: 2,
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    expect(names).toEqual(['Admin', 'Usuario']);
+  });
+
+  it('getJoinedActivities() loads the current user activity groups', () => {
+    let titles: string[] = [];
+    service.getJoinedActivities().subscribe((activities) => {
+      titles = activities.map((activity) => activity.title);
+    });
+
+    const request = httpMock.expectOne(`${environment.apiUrl}/activities/joined`);
+    expect(request.request.method).toBe('GET');
+    request.flush({ activities: [{ _id: 'activity-1', title: 'Basket' }] });
+
+    expect(titles).toEqual(['Basket']);
   });
 
   it('starts with nobody online', () => {

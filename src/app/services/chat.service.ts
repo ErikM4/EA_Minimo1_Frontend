@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, Subject, map } from 'rxjs';
 import { io, type Socket } from 'socket.io-client';
 
 import { environment } from '../../environments/environment';
+import { Activity } from '../models';
 import { AuthService } from './auth.service';
 
 export interface ChatUser {
@@ -23,17 +24,16 @@ export interface ChatError {
   message: string;
 }
 
-// EXPLICAR EN EL VÍDEO
-export interface BookCreatedEvent {
-  _id: string;
-  title: string;
-}
-
 // Mensaje con el que el backend rechaza la conexión si el token falta, es falso o ha caducado
 const AUTH_ERROR = 'Authentication error';
 
 interface ChatUsersResponse {
-  users: ChatUser[];
+  users?: ChatUser[];
+  data?: ChatUser[];
+}
+
+interface JoinedActivitiesResponse {
+  activities: Activity[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -43,6 +43,7 @@ export class ChatService {
 
   // Guardamos una sola conexión para que los componentes compartan el mismo socket.
   private socket: Socket | null = null;
+  private readonly activityRooms = new Set<string>();
 
   // Si el servidor rechaza el token, lo renovamos y reintentamos una sola vez (como el interceptor)
   private retriedWithNewToken = false;
@@ -72,19 +73,40 @@ export class ChatService {
   private readonly chatErrorSubject = new Subject<ChatError>();
   readonly chatError$ = this.chatErrorSubject.asObservable();
 
-// EXPLICAR EN EL VÍDEO
-  private readonly bookCreatedSubject = new Subject<BookCreatedEvent>();
-  readonly bookCreated$ = this.bookCreatedSubject.asObservable();
-
   getUsers(): Observable<ChatUser[]> {
-    // El interceptor HTTP añade el access token a esta petición protegida.
+    // Esta ruta solo devuelve los datos mínimos para mostrar contactos en el chat.
     return this.http
-      .get<ChatUsersResponse>(`${environment.apiUrl}/users`)
-      .pipe(map((response) => response.users));
+      .get<ChatUsersResponse>(`${environment.apiUrl}/users/chat-users`)
+      .pipe(
+        map((response) => {
+          const users = response.data ?? response.users;
+          if (!users) {
+            throw new Error('La API devolvió una lista de usuarios con un formato no válido.');
+          }
+          return users;
+        }),
+      );
+  }
+
+  getJoinedActivities(): Observable<Activity[]> {
+    return this.http
+      .get<JoinedActivitiesResponse>(`${environment.apiUrl}/activities/joined`)
+      .pipe(map((response) => response.activities));
+  }
+
+  registerActivityRoom(activityId: string): void {
+    // Evitamos repetir la misma sala cuando la persona ya se había inscrito.
+    const room = `activity:${activityId}`;
+    if (this.activityRooms.has(room)) return;
+
+    this.activityRooms.add(room);
+    if (this.socket?.connected) {
+      this.joinRoom(room);
+    }
   }
 
   connect(): void {
-    // Evita crear otra conexión si ya hay un socket.
+    // Evitamos abrir más de una conexión desde este servicio.
     if (this.socket) {
       return;
     }
@@ -105,6 +127,7 @@ export class ChatService {
 
     this.socket.on('connect', () => {
       this.retriedWithNewToken = false;
+      this.activityRooms.forEach((room) => this.joinRoom(room));
       this.connectionState.next(true);
     });
 
@@ -146,11 +169,6 @@ export class ChatService {
       this.chatErrorSubject.next(error);
     });
 
-    // EXPLICAR EN EL VÍDEO
-    this.socket.on('book:created', (book: BookCreatedEvent) => {
-      this.bookCreatedSubject.next(book);
-    });
-
     // Inicia la conexión después de configurar sus eventos.
     this.socket.connect();
   }
@@ -161,7 +179,8 @@ export class ChatService {
   }
 
   sendMessage(room: string, text: string): void {
-    // El servidor obtiene el autor del JWT; el cliente solo envía sala y texto.
+    // El servidor obtiene el autor del JWT.
+    // El cliente solo envía la sala y el texto.
     this.emit('chat:message', { room, text });
   }
 
@@ -175,8 +194,10 @@ export class ChatService {
   }
 
   disconnect(): void {
+    // Cerramos la conexión y vaciamos las salas locales al salir del chat.
     this.socket?.disconnect();
     this.socket = null;
+    this.activityRooms.clear();
     this.connectionState.next(false);
     this.onlineUsersSubject.next([]);
   }

@@ -52,11 +52,6 @@
     <p class="chat-error" role="alert">{{ error() }}</p>
   }
 
-  <!-- EXPLICAR EN EL VÍDEO -->
-  @if (newBook(); as book) {
-    <p class="notice" role="status">Nuevo libro creado: {{ book.title }}</p>
-  }
-
   <nav class="chat-tabs" role="tablist" aria-label="Tipo de chat">
     <button
       type="button"
@@ -88,6 +83,21 @@
   </nav>
 
   @if (chatLevel() === 'group') {
+    <section class="room-picker">
+      <h2 class="people-title">Grupos de actividades</h2>
+      @if (joinedActivities().length > 0) {
+        <div class="room-picker-controls">
+          @for (activity of joinedActivities(); track activity._id) {
+            <button type="button" class="secondary" (click)="openActivityRoom(activity._id)">
+              {{ activity.title }}
+            </button>
+          }
+        </div>
+      } @else {
+        <p class="muted">Al apuntarte a una actividad, su grupo aparecerá aquí automáticamente.</p>
+      }
+    </section>
+
     <form class="room-picker" (ngSubmit)="openGroupRoom()">
       <label for="group-id">Identificador del grupo</label>
       <div class="room-picker-controls">
@@ -103,7 +113,7 @@
         <button type="submit" [disabled]="!connected()">Entrar al grupo</button>
       </div>
       <p class="muted">
-        El servidor acepta el identificador como texto; por ahora no valida grupos ni permisos.
+        También puedes entrar en un grupo con un identificador compartido.
       </p>
     </form>
   }

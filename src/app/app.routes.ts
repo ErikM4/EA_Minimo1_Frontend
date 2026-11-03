@@ -1,57 +1,74 @@
 import { Routes } from '@angular/router';
 
-import { AuthorForm } from './components/author-form/author-form';
-import { AuthorsList } from './components/authors-list/authors-list';
-import { BookForm } from './components/book-form/book-form';
-import { BooksList } from './components/books-list/books-list';
+import { ActivitiesList } from './components/activities-list/activities-list';
+import { ActivityForm } from './components/activity-form/activity-form';
 import { Chat } from './components/chat/chat';
 import { Home } from './components/home/home';
 import { Login } from './components/login/login';
+import { ReportsList } from './components/reports-list/reports-list';
+import { ReportForm } from './components/report-form/report-form';
 import { Register } from './components/register/register';
-import { adminGuard, authGuard, guestGuard } from './guards/auth.guard';
+import { UserForm } from './components/user-form/user-form';
+import { UsersList } from './components/users-list/users-list';
+import { activityPublisherGuard, adminGuard, authGuard, guestGuard } from './guards/auth.guard';
 
-// canActivate: los guards que se comprueban, en orden, antes de entrar en la ruta.
-//   guestGuard            solo sin sesión (login y registro)
-//   authGuard             solo con sesión; si no, al login
-//   authGuard, adminGuard con sesión y además rol admin; un user vuelve a la página de inicio
 export const routes: Routes = [
+  // Las pantallas de administración requieren una cuenta ADMIN.
   { path: '', component: Home, canActivate: [authGuard], title: 'Inicio' },
   { path: 'login', component: Login, canActivate: [guestGuard], title: 'Iniciar sesión' },
   { path: 'register', component: Register, canActivate: [guestGuard], title: 'Crear cuenta' },
-
+  { path: 'users', component: UsersList, canActivate: [authGuard, adminGuard], title: 'Usuarios' },
   {
-    path: 'authors',
-    component: AuthorsList,
+    path: 'users/new',
+    component: UserForm,
     canActivate: [authGuard, adminGuard],
-    title: 'Autores',
+    title: 'Nuevo usuario',
   },
   {
-    path: 'authors/new',
-    component: AuthorForm,
+    path: 'users/:id/edit',
+    component: UserForm,
     canActivate: [authGuard, adminGuard],
-    title: 'Nuevo autor',
+    title: 'Editar usuario',
   },
   {
-    path: 'authors/:id/edit',
-    component: AuthorForm,
-    canActivate: [authGuard, adminGuard],
-    title: 'Editar autor',
+    path: 'activities',
+    component: ActivitiesList,
+    // Cualquier persona con sesión puede consultar las actividades activas.
+    canActivate: [authGuard],
+    title: 'Actividades',
   },
-  { path: 'books', component: BooksList, canActivate: [authGuard, adminGuard], title: 'Libros' },
   {
-    path: 'books/new',
-    component: BookForm,
+    path: 'activities/new',
+    component: ActivityForm,
+    // Pueden publicar actividades ADMIN y STORE_HOST.
+    canActivate: [authGuard, activityPublisherGuard],
+    title: 'Nueva actividad',
+  },
+  {
+    path: 'activities/:id/edit',
+    component: ActivityForm,
     canActivate: [authGuard, adminGuard],
-    title: 'Nuevo libro',
+    title: 'Editar actividad',
+  },
+  {
+    path: 'reports',
+    component: ReportsList,
+    canActivate: [authGuard, adminGuard],
+    title: 'Reportes',
+  },
+  {
+    path: 'reports/new',
+    component: ReportForm,
+    // Cualquier persona con sesión puede enviar un reporte.
+    canActivate: [authGuard],
+    title: 'Nuevo reporte',
+  },
+  {
+    path: 'reports/:id/edit',
+    component: ReportForm,
+    canActivate: [authGuard, adminGuard],
+    title: 'Revisar reporte',
   },
   { path: 'chat', component: Chat, canActivate: [authGuard], title: 'Chat' },
-  {
-    path: 'books/:id/edit',
-    component: BookForm,
-    canActivate: [authGuard, adminGuard],
-    title: 'Editar libro',
-  },
-
-  // Cualquier otra URL vuelve a la página de inicio (o al login, si no hay sesión)
   { path: '**', redirectTo: '' },
 ];

@@ -3,8 +3,7 @@ import { RouterLink } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
 
-// Página de inicio para cualquier usuario con sesión.
-// Todos ven el acceso al chat; un admin ve además los accesos al backoffice.
+// La página de inicio muestra accesos distintos según la cuenta que ha iniciado sesión.
 @Component({
   selector: 'app-home',
   imports: [RouterLink],

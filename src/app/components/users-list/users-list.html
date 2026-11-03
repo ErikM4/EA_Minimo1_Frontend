@@ -1,0 +1,131 @@
+<div class="page-header">
+  <h1>Usuarios</h1>
+  <a class="button" routerLink="/users/new">Nuevo usuario</a>
+</div>
+
+<div class="toolbar">
+  <input
+    class="search"
+    type="search"
+    placeholder="Buscar por nombre o email"
+    aria-label="Buscar usuarios"
+    [ngModel]="search()"
+    (ngModelChange)="onSearchChange($event)"
+  />
+  <label class="inline-filter">
+    <input
+      type="checkbox"
+      [ngModel]="showDeleted()"
+      (ngModelChange)="onDeletedFilterChange($event)"
+    />
+    Mostrar eliminados
+  </label>
+</div>
+
+@if (selectedIds().size > 0) {
+  <div class="bulk-actions">
+    <span>{{ selectedIds().size }} seleccionado(s)</span>
+    <button
+      type="button"
+      class="secondary"
+      [disabled]="deleting()"
+      (click)="requestDelete([...selectedIds()], false)"
+    >
+      Archivar seleccionados
+    </button>
+    <button
+      type="button"
+      class="danger"
+      [disabled]="deleting()"
+      (click)="requestDelete([...selectedIds()], true)"
+    >
+      Eliminar definitivamente
+    </button>
+  </div>
+}
+
+@if (error()) {
+  <p class="alert" role="alert">{{ error() }}</p>
+}
+
+@if (loading()) {
+  <p class="muted">Cargando usuarios...</p>
+} @else {
+  <table>
+    <thead>
+      <tr>
+        <th>
+          <input
+            type="checkbox"
+            aria-label="Seleccionar todos los usuarios de esta página"
+            [checked]="isAllSelected()"
+            (change)="toggleSelectAll($event)"
+          />
+        </th>
+        <th [attr.aria-sort]="sortBy() === 'name' ? (sortOrder() === 'asc' ? 'ascending' : 'descending') : 'none'">
+          <button type="button" class="sort-button" (click)="sort('name')">Nombre ↕</button>
+        </th>
+        <th [attr.aria-sort]="sortBy() === 'email' ? (sortOrder() === 'asc' ? 'ascending' : 'descending') : 'none'">
+          <button type="button" class="sort-button" (click)="sort('email')">Email ↕</button>
+        </th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of users(); track user._id) {
+        <tr>
+          <td>
+            <input
+              type="checkbox"
+              [attr.aria-label]="'Seleccionar a ' + user.name"
+              [checked]="selectedIds().has(user._id)"
+              (change)="toggleSelected(user._id, $event)"
+            />
+          </td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>
+            <span class="status" [class.inactive]="user.deletedAt != null">
+              {{ user.deletedAt != null ? 'Eliminado' : user.isBanned ? 'Bloqueado' : 'Activo' }}
+            </span>
+          </td>
+          <td class="actions">
+            <a class="button secondary" [routerLink]="['/users', user._id, 'edit']">Editar</a>
+            @if (user.deleted) {
+              <button type="button" class="secondary" (click)="restoreUser(user)">Restaurar</button>
+            } @else {
+              <button
+                type="button"
+                class="danger"
+                (click)="requestDelete([user._id], false)"
+              >
+                Archivar
+              </button>
+            }
+            <button
+              type="button"
+              class="danger"
+              (click)="requestDelete([user._id], true)"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td class="empty" colspan="6">No hay usuarios para mostrar.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <app-pagination [page]="page()" [totalPages]="totalPages()" (pageChange)="onPageChange($event)" />
+}
+
+<app-confirm-modal
+  (confirmed)="confirmDelete()"
+  (cancelled)="pendingDelete.set(null)"
+/>

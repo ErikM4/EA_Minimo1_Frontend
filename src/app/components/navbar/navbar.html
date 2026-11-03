@@ -1,22 +1,32 @@
 <header class="navbar">
   <a class="brand" routerLink="/">Backoffice</a>
 
-  <!-- Los enlaces del backoffice solo los ve un admin. Ocultarlos es comodidad, no seguridad:
-       si un user escribe la URL, adminGuard lo devuelve al inicio y la API responde 403 -->
-       
+  <!-- Las vistas de gestión solo se muestran a administradores; las rutas también están protegidas por guards. -->
   @if (auth.isAdmin()) {
     <!-- routerLinkActive le pone la clase "active" al enlace de la página en la que estoy -->
     <nav>
-     <!-- <a routerLink="/authors" routerLinkActive="active">Autores</a>
-      <a routerLink="/books" routerLinkActive="active">Libros</a> -->
+      <a routerLink="/users" routerLinkActive="active">Usuarios</a>
+      <a routerLink="/activities" routerLinkActive="active">Actividades</a>
+      <a routerLink="/reports" routerLinkActive="active">Reportes</a>
+    </nav>
+  } @else if (auth.isLoggedIn()) {
+    <nav>
+      <a routerLink="/activities" routerLinkActive="active">Actividades</a>
     </nav>
   }
 
- <!-- @if (auth.isLoggedIn()) {
+  @if (auth.canPublishActivities()) {
+    <nav>
+      <a routerLink="/activities/new" routerLinkActive="active">Publicar actividad</a>
+    </nav>
+  }
+
+  @if (auth.isLoggedIn()) {
     <nav>
       <a routerLink="/chat" routerLinkActive="active">Chat</a>
+      <a routerLink="/reports/new" routerLinkActive="active">Crear reporte</a>
     </nav>
-  }  -->
+  }
 
   <div class="session">
     @if (auth.user(); as user) {

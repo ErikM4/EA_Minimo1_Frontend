@@ -1,8 +1,8 @@
-// Direcciones de los servicios del backend
+// Direcciones de los servicios del backend.
 export const environment = {
-  // URL usada por las llamadas HTTP.
+  // Cambiarla si el backend se ejecuta en otro host o puerto.
   apiUrl: 'http://localhost:1337',
 
-  // URL base usada para conectar con Socket.IO.
+  // Socket.IO se conecta al mismo servidor que la API.
   socketUrl: 'http://localhost:1337',
 };

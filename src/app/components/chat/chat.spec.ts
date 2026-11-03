@@ -14,6 +14,7 @@ class FakeChatService {
   messages$ = new Subject<ChatMessage>();
   chatError$ = new Subject<ChatError>();
   onlineUsers$ = new BehaviorSubject<string[]>([]);
+  activities = [{ _id: 'activity-1', title: 'Basket' }];
   users: ChatUser[] = [
     { _id: 'b-user', name: 'Usuario' },
     { _id: 'a-admin', name: 'Admin' },
@@ -22,8 +23,10 @@ class FakeChatService {
   connect = vi.fn();
   disconnect = vi.fn();
   joinRoom = vi.fn();
+  registerActivityRoom = vi.fn();
   sendMessage = vi.fn();
   getUsers = () => of(this.users);
+  getJoinedActivities = () => of(this.activities);
 }
 
 const message = (room: string, text: string): ChatMessage => ({
@@ -41,10 +44,10 @@ describe('Chat', () => {
 
   beforeEach(async () => {
     localStorage.clear();
-    // Sesión del admin, cuyo id es a-admin
+    // Sesión del usuario, cuyo id es a-admin
     localStorage.setItem(
       'user',
-      JSON.stringify({ _id: 'a-admin', name: 'Admin', email: 'a@b.c', role: 'admin' }),
+      JSON.stringify({ _id: 'a-admin', name: 'Admin', email: 'a@b.c', role: 'USER' }),
     );
     chat = new FakeChatService();
 
@@ -67,6 +70,16 @@ describe('Chat', () => {
     chat.connectionStatus$.next(true);
 
     expect(chat.joinRoom).toHaveBeenCalledWith('general');
+  });
+
+  it('registers joined activity rooms and opens the activity chat', () => {
+    expect(chat.registerActivityRoom).toHaveBeenCalledWith('activity-1');
+
+    chat.connectionStatus$.next(true);
+    component.openActivityRoom('activity-1');
+
+    expect(component.activeRoom()).toBe('activity:activity-1');
+    expect(chat.joinRoom).toHaveBeenLastCalledWith('activity:activity-1');
   });
 
   it('does not offer a direct chat with oneself', () => {

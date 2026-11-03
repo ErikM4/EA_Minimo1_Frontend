@@ -1,13 +1,3 @@
-export type { Author, AuthorsPage, CreateAuthor, UpdateAuthor } from './author.model';
-export type {
-  Book,
-  BookInput,
-  BookLanguage,
-  BooksPage,
-  CreateBook,
-  UpdateBook,
-} from './book.model';
-export { BOOK_LANGUAGES, BOOK_TAGS } from './book.model';
 export type {
   LoginRequest,
   LoginResponse,
@@ -15,5 +5,23 @@ export type {
   RegisterRequest,
   RegisterResponse,
   User,
+  UserInput,
   UserRole,
 } from './user.model';
+export type {
+  Activity,
+  ActivityCategory,
+  ActivityInput,
+  ActivityModality,
+  ActivityStatus,
+  ActivitySubcategory,
+} from './activity.model';
+export type {
+  Report,
+  ReportInput,
+  ReportReason,
+  ReportStatus,
+  ReportTargetType,
+  ReportUpdate,
+} from './report.model';
+export type { PageParams, PaginatedResponse } from './paginated.model';

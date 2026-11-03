@@ -13,13 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../services/auth.service';
-// EXPLICAR EN EL VÍDEO
-import {
-  BookCreatedEvent,
-  ChatMessage,
-  ChatService,
-  ChatUser,
-} from '../../services/chat.service';
+import { ChatMessage, ChatService, ChatUser } from '../../services/chat.service';
 
 type ChatLevel = 'general' | 'group' | 'direct';
 
@@ -43,6 +37,7 @@ export class Chat implements OnInit, OnDestroy {
   readonly chatLevel = signal<ChatLevel>('general');
   readonly connected = signal(false);
   readonly users = signal<ChatUser[]>([]);
+  readonly joinedActivities = signal<{ _id: string; title: string }[]>([]);
   readonly messages = signal<ChatMessage[]>([]);
   readonly selectedUserId = signal('');
   readonly groupId = signal('');
@@ -50,9 +45,6 @@ export class Chat implements OnInit, OnDestroy {
   readonly error = signal('');
   readonly activeRoom = signal('general');
   readonly onlineIds = signal<string[]>([]);
-
-  // EXPLICAR EN EL VÍDEO
-  readonly newBook = signal<BookCreatedEvent | null>(null);
 
   // El usuario con sesión, para mostrarlo el primero de la lista como "tú"
   readonly me = this.authService.user;
@@ -114,11 +106,6 @@ export class Chat implements OnInit, OnDestroy {
       }),
     );
 
-    // EXPLICAR EN EL VÍDEO
-    this.subscriptions.add(
-      this.chatService.bookCreated$.subscribe((book) => this.newBook.set(book)),
-    );
-
     this.subscriptions.add(
       this.chatService.getUsers().subscribe({
         next: (users) => {
@@ -130,6 +117,20 @@ export class Chat implements OnInit, OnDestroy {
         },
       }),
     );
+
+    if (this.authService.user()?.role === 'USER') {
+      this.subscriptions.add(
+        this.chatService.getJoinedActivities().subscribe({
+          next: (activities) => {
+            this.joinedActivities.set(activities);
+            activities.forEach((activity) => this.chatService.registerActivityRoom(activity._id));
+          },
+          error: (error: HttpErrorResponse) => {
+            this.error.set(`No se pudieron cargar los grupos de actividades: ${error.message}`);
+          },
+        }),
+      );
+    }
 
     try {
       this.chatService.connect();
@@ -168,6 +169,17 @@ export class Chat implements OnInit, OnDestroy {
     }
 
     this.activeRoom.set(`group:${groupId}`);
+    this.messages.set([]);
+    this.error.set('');
+    this.joinActiveRoom();
+  }
+
+  openActivityRoom(activityId: string): void {
+    const activity = this.joinedActivities().find((item) => item._id === activityId);
+    if (!activity) return;
+
+    this.chatLevel.set('group');
+    this.activeRoom.set(`activity:${activity._id}`);
     this.messages.set([]);
     this.error.set('');
     this.joinActiveRoom();

@@ -16,9 +16,8 @@ function withToken(request: HttpRequest<unknown>, token: string): HttpRequest<un
 // Un interceptor se ejecuta en TODAS las peticiones de HttpClient, entre el servicio y la red.
 // Este hace dos cosas, para que ningún servicio tenga que preocuparse del token:
 //   1. Añade la cabecera Authorization: Bearer <token>.
-// EXPLICAR EN EL VÍDEO
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
-  // EXPLICAR EN EL VÍDEO
+  // Las rutas de inicio de sesión no necesitan el token anterior.
   if (request.url.startsWith(`${environment.apiUrl}/auth/`)) {
     return next(request);
   }

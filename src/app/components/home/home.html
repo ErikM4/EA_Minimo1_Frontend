@@ -6,16 +6,23 @@
   <p>Puedes hablar con el resto de usuarios en el chat: general, de grupo o directo.</p>
   <div class="form-actions">
     <a class="button" routerLink="/chat">Ir al chat</a>
+    <a class="button" routerLink="/activities">Ver actividades</a>
+    <a class="button secondary" routerLink="/reports/new">Crear reporte</a>
   </div>
 
   @if (auth.isAdmin()) {
-    <p>Desde el backoffice puedes gestionar:</p>
+    <p>Desde el panel puedes gestionar usuarios, actividades y reportes:</p>
     <div class="form-actions">
-      <a class="button" routerLink="/authors">Autores</a> 
-      <a class="button" routerLink="/books">Libros</a>
+      <a class="button" routerLink="/users">Usuarios</a>
+      <a class="button" routerLink="/activities">Actividades</a>
       <a class="button" routerLink="/reports">Reportes</a>
     </div>
+  } @else if (auth.canPublishActivities()) {
+    <p>Como anfitrión de tienda, puedes publicar nuevas actividades:</p>
+    <div class="form-actions">
+      <a class="button" routerLink="/activities/new">Publicar actividad</a>
+    </div>
   } @else {
-    <p>El backoffice de autores y libros es solo para administradores.</p>
+    <p>Desde aquí puedes consultar las actividades disponibles.</p>
   }
 }

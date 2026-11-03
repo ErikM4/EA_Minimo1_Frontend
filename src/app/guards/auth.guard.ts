@@ -29,6 +29,13 @@ export const adminGuard: CanActivateFn = () => {
   return auth.isAdmin() ? true : router.createUrlTree(['/']);
 };
 
+export const activityPublisherGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  return auth.canPublishActivities() ? true : router.createUrlTree(['/']);
+};
+
 // Solo para quien NO tiene sesión (login y registro). Si ya tiene sesión, a la página de inicio
 export const guestGuard: CanActivateFn = () => {
   const auth = inject(AuthService);

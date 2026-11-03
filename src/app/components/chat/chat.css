@@ -91,7 +91,7 @@
 
 button.person:hover:not(:disabled) {
   border-color: var(--primary);
-  background: #eef0fb;
+  background: var(--primary-soft);
   color: var(--primary-dark);
 }
 
@@ -132,7 +132,7 @@ button.person:hover:not(:disabled) {
 }
 
 .chat-tabs button:hover:not(:disabled) {
-  background: #eef0fb;
+  background: var(--primary-soft);
   color: var(--primary-dark);
 }
 
@@ -141,6 +141,7 @@ button.person:hover:not(:disabled) {
   border-bottom-color: var(--surface);
   background: var(--surface);
   color: var(--primary-dark);
+  box-shadow: inset 0 -2px var(--primary);
 }
 
 .room-picker {

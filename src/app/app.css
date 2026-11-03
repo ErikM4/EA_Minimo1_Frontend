@@ -1,5 +1,19 @@
 main {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 1.75rem;
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-radius: 0 0 18px 18px;
+  background: var(--surface);
+  box-shadow: 0 14px 36px rgb(91 50 24 / 7%);
+}
+
+@media (max-width: 600px) {
+  main {
+    padding: 1.25rem 1rem;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
 }

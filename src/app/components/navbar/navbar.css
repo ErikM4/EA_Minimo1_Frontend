@@ -2,9 +2,12 @@
   display: flex;
   align-items: center;
   gap: 2rem;
-  height: 56px;
-  padding: 0 1.5rem;
-  background: var(--primary);
+  min-height: 56px;
+  height: auto;
+  padding: 0.45rem 1.5rem;
+  background: linear-gradient(110deg, #9a3412, #c2410c 55%, #d45518);
+  box-shadow: 0 5px 16px rgb(124 45 18 / 20%);
+  flex-wrap: wrap;
 }
 
 .brand {
@@ -17,21 +20,26 @@
 nav {
   display: flex;
   gap: 0.25rem;
+  flex-wrap: wrap;
 }
 
 nav a {
-  padding: 0.4rem 0.8rem;
-  border-radius: var(--radius);
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
+  transition:
+    color 140ms ease,
+    background-color 140ms ease;
 }
 
 nav a:hover {
+  background: rgb(255 255 255 / 12%);
   color: #fff;
 }
 
 nav a.active {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgb(255 255 255 / 20%);
   color: #fff;
 }
 
@@ -46,4 +54,20 @@ nav a.active {
 .user {
   color: #fff;
   font-size: 0.9rem;
+}
+
+@media (max-width: 760px) {
+  .navbar {
+    gap: 0.5rem 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .navbar > nav {
+    flex-basis: 100%;
+    order: 1;
+  }
+
+  .session {
+    margin-left: auto;
+  }
 }

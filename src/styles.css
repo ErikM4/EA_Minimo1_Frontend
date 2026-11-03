@@ -1,16 +1,18 @@
 /* Estilos comunes a todas las pantallas. Lo que es de un solo componente va en su .css */
 
 :root {
-  --primary: #3949ab;
-  --primary-dark: #283593;
+  /* Estos colores forman la paleta naranja compartida por toda la aplicación. */
+  --primary: #c2410c;
+  --primary-dark: #9a3412;
+  --primary-soft: #fff1e6;
   --danger: #c62828;
   --danger-light: #fdecea;
-  --text: #1f2933;
+  --text: #292524;
   --muted: #6b7280;
-  --border: #d9dde3;
-  --background: #f4f5f7;
+  --border: #eadfd7;
+  --background: #fff8f2;
   --surface: #ffffff;
-  --radius: 6px;
+  --radius: 10px;
 
   color: var(--text);
   font-family:
@@ -27,12 +29,16 @@
 
 body {
   margin: 0;
-  background: var(--background);
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at top left, #ffead8 0, transparent 34rem),
+    var(--background);
 }
 
 h1 {
   margin: 0 0 1rem;
-  font-size: 1.5rem;
+  font-size: clamp(1.5rem, 2.5vw, 1.9rem);
+  letter-spacing: -0.035em;
 }
 
 a {
@@ -43,20 +49,29 @@ a {
 button,
 .button {
   display: inline-block;
-  padding: 0.45rem 0.9rem;
+  padding: 0.55rem 1rem;
   border: 1px solid var(--primary);
   border-radius: var(--radius);
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary), #d45518);
   color: #fff;
   font: inherit;
   font-size: 0.9rem;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
 }
 
 button:hover:not(:disabled),
 .button:hover {
   background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  box-shadow: 0 4px 12px rgb(154 52 18 / 20%);
+  transform: translateY(-1px);
 }
 
 button:disabled {
@@ -70,7 +85,7 @@ button.secondary {
 }
 
 button.secondary:hover:not(:disabled) {
-  background: #eef0fb;
+  background: var(--primary-soft);
 }
 
 button.danger {
@@ -99,8 +114,12 @@ button.danger:hover:not(:disabled) {
 table {
   width: 100%;
   border: 1px solid var(--border);
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 12px;
   background: var(--surface);
+  box-shadow: 0 5px 18px rgb(91 50 24 / 5%);
 }
 
 th,
@@ -112,8 +131,21 @@ td {
 }
 
 th {
-  background: #eef0f4;
+  background: #fff2e8;
+  color: #713515;
   font-weight: 600;
+}
+
+tbody tr {
+  transition: background-color 120ms ease;
+}
+
+tbody tr:hover {
+  background: #fffaf6;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
 }
 
 td.actions {
@@ -134,12 +166,32 @@ td.empty,
 input,
 select,
 textarea {
-  padding: 0.45rem 0.6rem;
+  padding: 0.55rem 0.7rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
   font: inherit;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+.button:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgb(234 88 12 / 30%);
+  outline-offset: 2px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgb(234 88 12 / 12%);
 }
 
 /* Angular añade estas clases a los controles, así marco en rojo los que están mal */
@@ -171,10 +223,11 @@ form {
   display: grid;
   gap: 1rem;
   max-width: 560px;
-  padding: 1.25rem;
+  padding: 1.5rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 14px;
   background: var(--surface);
+  box-shadow: 0 8px 26px rgb(91 50 24 / 6%);
 }
 
 label {

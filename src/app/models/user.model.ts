@@ -1,15 +1,26 @@
-// Un usuario es quien inicia sesión en la aplicación. No es lo mismo que un autor:
-// los autores son datos del backoffice, como los libros.
-export type UserRole = 'USER' | 'ADMIN';
+// Un usuario puede entrar en la aplicación y tener uno de estos roles.
+export type UserRole = 'USER' | 'ADMIN' | 'STORE_HOST';
 
-// El usuario tal como lo devuelve la API (nunca trae la contraseña)
+// Datos de usuario que devuelve la API, sin incluir la contraseña.
 export interface User {
   _id: string;
   name: string;
   email: string;
   role: UserRole;
+  deleted?: boolean;
+  isBanned?: boolean;
+  avatarUrl?: string;
+  bio?: string;
   createdAt?: string;
   updatedAt?: string;
+  deletedAt?: string | null;
+}
+
+export interface UserInput {
+  name: string;
+  email: string;
+  role: UserRole;
+  password?: string;
 }
 
 // POST /auth/register
@@ -28,7 +39,7 @@ export interface LoginRequest {
   email: string;
   password: string;
 }
-//CAMBIO
+// Respuesta de inicio de sesión con el token y los datos públicos de la cuenta.
 export interface LoginResponse {
   token: string;
   user: User;
