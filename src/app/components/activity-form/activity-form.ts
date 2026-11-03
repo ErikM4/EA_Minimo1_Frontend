@@ -71,8 +71,6 @@ export class ActivityForm implements OnInit {
     modality: ['CASUAL' as ActivityModality, Validators.required],
     status: ['OPEN' as ActivityStatus, Validators.required],
     addressName: ['', Validators.required],
-    longitude: this.fb.control(0, [Validators.required, Validators.min(-180), Validators.max(180)]),
-    latitude: this.fb.control(0, [Validators.required, Validators.min(-90), Validators.max(90)]),
     startTime: ['', Validators.required],
     endTime: ['', Validators.required],
     minParticipants: this.fb.control(2, [Validators.required, Validators.min(1)]),
@@ -106,7 +104,7 @@ export class ActivityForm implements OnInit {
     }
 
     const values = this.form.getRawValue();
-    // La API espera ubicación y horario agrupados, con coordenadas en orden longitud y latitud.
+    // La API espera ubicación y horario agrupados.
     const payload: ActivityInput = {
       title: values.title.trim(),
       description: values.description.trim(),
@@ -116,7 +114,6 @@ export class ActivityForm implements OnInit {
       status: values.status,
       location: {
         type: 'Point',
-        coordinates: [values.longitude, values.latitude],
         addressName: values.addressName.trim(),
         isStoreLocation: false,
       },
@@ -159,8 +156,6 @@ export class ActivityForm implements OnInit {
       modality: activity.modality,
       status: activity.status,
       addressName: activity.location.addressName,
-      longitude: activity.location.coordinates[0],
-      latitude: activity.location.coordinates[1],
       startTime: toLocalDateTime(activity.schedule.startTime),
       endTime: toLocalDateTime(activity.schedule.endTime),
       minParticipants: activity.capacity.minParticipants,
