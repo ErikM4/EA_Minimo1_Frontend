@@ -70,6 +70,23 @@
           <small class="field-error">La dirección es obligatoria.</small>
         }
       </label>
+      <div class="form-grid">
+        <label>
+          Latitud *
+          <input type="number" formControlName="latitude" min="-90" max="90" step="any" />
+          @if (form.controls.latitude.touched && form.controls.latitude.invalid) {
+            <small class="field-error">Introduce una latitud entre -90 y 90.</small>
+          }
+        </label>
+        <label>
+          Longitud *
+          <input type="number" formControlName="longitude" min="-180" max="180" step="any" />
+          @if (form.controls.longitude.touched && form.controls.longitude.invalid) {
+            <small class="field-error">Introduce una longitud entre -180 y 180.</small>
+          }
+        </label>
+      </div>
+      <small>Usa grados decimales. Las coordenadas se guardan como longitud y latitud.</small>
     </fieldset>
 
     <fieldset>

@@ -16,6 +16,7 @@ export interface Activity {
   status: ActivityStatus;
   location: {
     type: 'Point';
+    coordinates: [number, number];
     addressName: string;
     isStoreLocation: boolean;
   };
