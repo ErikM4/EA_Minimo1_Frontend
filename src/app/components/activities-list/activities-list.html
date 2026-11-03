@@ -21,7 +21,7 @@
         [ngModel]="showDeleted()"
         (ngModelChange)="onDeletedFilterChange($event)"
       />
-      Mostrar eliminadas
+      Mostrar archivadas
     </label>
   }
   <select
@@ -117,19 +117,24 @@
           <td>
             <span
               class="status"
-              [class.inactive]="activity.deletedAt !== null && activity.deletedAt !== undefined"
+              [class.inactive]="activity.deleted"
             >
-              {{
-                activity.deletedAt !== null && activity.deletedAt !== undefined
-                  ? 'Eliminada'
-                  : 'Activa'
-              }}
+              {{ activity.deleted ? 'Archivada' : 'Activa' }}
             </span>
           </td>
           @if (auth.isAdmin()) {
             <td class="actions">
               <a class="button secondary" [routerLink]="['/activities', activity._id, 'edit']">Editar</a>
-              @if (!activity.deleted) {
+              @if (activity.deleted) {
+                <button
+                  type="button"
+                  class="secondary"
+                  [disabled]="restoringIds().has(activity._id)"
+                  (click)="restoreActivity(activity)"
+                >
+                  {{ restoringIds().has(activity._id) ? 'Restaurando...' : 'Desarchivar' }}
+                </button>
+              } @else {
                 <button
                   type="button"
                   class="danger"

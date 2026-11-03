@@ -34,6 +34,7 @@ export class ActivitiesList implements OnInit {
   totalPages = signal(1);
   loading = signal(true);
   deleting = signal(false);
+  restoringIds = signal<Set<string>>(new Set());
   joiningIds = signal<Set<string>>(new Set());
   error = signal('');
   search = signal('');
@@ -142,6 +143,31 @@ export class ActivitiesList implements OnInit {
       error: (err: HttpErrorResponse) => {
         this.error.set(apiErrorMessage(err));
         this.joiningIds.update((ids) => {
+          const next = new Set(ids);
+          next.delete(activity._id);
+          return next;
+        });
+      },
+    });
+  }
+
+  restoreActivity(activity: Activity): void {
+    if (this.restoringIds().has(activity._id)) return;
+    this.error.set('');
+    this.restoringIds.update((ids) => new Set(ids).add(activity._id));
+
+    this.activityService.restoreActivity(activity._id).subscribe({
+      next: () => {
+        this.restoringIds.update((ids) => {
+          const next = new Set(ids);
+          next.delete(activity._id);
+          return next;
+        });
+        this.loadActivities();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.error.set(apiErrorMessage(err));
+        this.restoringIds.update((ids) => {
           const next = new Set(ids);
           next.delete(activity._id);
           return next;

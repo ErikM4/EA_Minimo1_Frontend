@@ -40,6 +40,10 @@ export class ActivityService {
     return this.http.patch<void>(`${this.apiUrl}/${id}/soft-delete`, {});
   }
 
+  restoreActivity(id: string): Observable<{ activity: Activity }> {
+    return this.http.patch<{ activity: Activity }>(`${this.apiUrl}/${id}/restore`, {});
+  }
+
   deleteActivity(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

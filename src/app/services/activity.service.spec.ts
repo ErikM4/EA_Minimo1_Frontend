@@ -30,4 +30,13 @@ describe('ActivityService', () => {
     expect(request.request.method).toBe('GET');
     request.flush({ data: [], totalDocs: 0, totalPages: 1, currentPage: 3 });
   });
+
+  it('restores an archived activity', () => {
+    service.restoreActivity('a1').subscribe();
+
+    const request = httpMock.expectOne(`${environment.apiUrl}/activities/a1/restore`);
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.body).toEqual({});
+    request.flush({ activity: {} });
+  });
 });
